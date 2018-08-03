@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-"""
-Spyder Editor
 
-This is a temporary script file.
-"""
+try :
+    from StringIO import StringIO
+except :
+    from io import StringIO
 
 import smtplib
 from email.mime.text import MIMEText
@@ -34,16 +34,16 @@ class mailSender:
         msg["From"] = self.sender
         msg["To"] = self.to 
         """
-        
-        message = MIMEMultipart()
-        message['From'] = self.sender
-        message['To'] = self.to
-        message['Subject'] = self.subject
-        message.attach(MIMEText(msg))
-        
-        
-        self.smtpObj.sendmail(self.sender ,  self.to , message.as_string()  )
-    
+        try :     
+            message = MIMEMultipart()
+            message['From'] = self.sender
+            message['To'] = self.to
+            message['Subject'] = self.subject
+            message.attach(MIMEText(msg))
+            self.smtpObj.sendmail(self.sender ,  self.to , message.as_string()  )
+            return 0 
+        except Exception as e: 
+            return "[*] Error while sending mail " + e 
     def deconnect(self):
         self.smtpObj.quit()
         

